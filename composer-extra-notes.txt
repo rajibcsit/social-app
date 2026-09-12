@@ -1,0 +1,7 @@
+Recommended packages for production:
+- laravel/breeze for authentication
+- intervention/image for advanced image processing
+- spatie/laravel-permission for roles
+- laravel/reverb for realtime notifications/chat
+- laravel/horizon for queues
+- predis/predis or phpredis for Redis
