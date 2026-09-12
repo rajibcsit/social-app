@@ -11,22 +11,12 @@
     <div class="w-28 h-28 rounded-full border-4 border-white bg-gray-200 flex items-center justify-center text-4xl font-bold text-gray-600 overflow-hidden">
      @if($user->avatar)<img src="{{ asset('storage/'.$user->avatar) }}" class="w-full h-full object-cover">@else{{ strtoupper(substr($user->name,0,1)) }}@endif
     </div>
-    <div class="flex-1"><h1 class="text-2xl font-extrabold">{{ $user->name }}</h1><p class="text-gray-500">{{ $user->bio }}</p></div>
-    @if(auth()->id() !== $user->id)<form method="POST" action="{{ route('friends.store',$user) }}">@csrf<button class="btn btn-primary">Add Friend</button></form>@endif
+    <div class="flex-1"><h1 class="text-2xl font-extrabold">{{ $user->name }}</h1><p class="text-gray-500">{{ $user->bio }}</p><div class="text-xs text-slate-500 mt-2 space-x-3">@if($user->location)<span>📍 {{ $user->location }}</span>@endif @if($user->website)<a class="text-blue-600" href="{{ $user->website }}" target="_blank">🔗 Website</a>@endif</div></div>
+    @if(auth()->id() === $user->id)<a href="{{ route('profile.edit') }}" class="btn btn-light">Edit Profile</a>@else<form method="POST" action="{{ route('friends.store',$user) }}">@csrf<button class="btn btn-primary">Add Friend</button></form>@endif
    </div>
   </div>
  </div>
- @if(auth()->id()===$user->id)
- <div class="card p-5 mt-4">
-  <h2 class="font-bold mb-3">Edit profile</h2>
-  <form method="POST" action="{{ route('profile.update',$user) }}" enctype="multipart/form-data" class="grid md:grid-cols-2 gap-3">@csrf
-   <input name="name" value="{{ $user->name }}" class="border rounded-lg p-2">
-   <input name="bio" value="{{ $user->bio }}" placeholder="Bio" class="border rounded-lg p-2">
-   <input type="file" name="avatar" accept="image/*"><input type="file" name="cover" accept="image/*">
-   <button class="btn btn-primary md:col-span-2">Save profile</button>
-  </form>
- </div>
- @endif
+
  <div class="mt-5 space-y-4">
   @foreach($posts as $post)
    <article class="card p-4"><div class="font-bold">{{ $post->user->name }}</div><div class="text-xs text-gray-500">{{ $post->created_at->diffForHumans() }}</div><p class="my-3 whitespace-pre-line">{{ $post->body }}</p>@if($post->image)<img src="{{ asset('storage/'.$post->image) }}" class="rounded-xl max-h-[600px] object-cover w-full">@endif</article>

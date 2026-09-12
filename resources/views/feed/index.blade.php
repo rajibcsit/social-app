@@ -1,62 +1,18 @@
 @extends('layouts.social')
-@section('title','Home')
+@section('title','Home · Socially')
 @section('content')
-<div class="grid grid-cols-1 lg:grid-cols-[250px_minmax(0,680px)_250px] gap-6 justify-center">
- <aside class="hidden lg:block">
-  <div class="card p-4 sticky top-24">
-   <a class="block font-semibold p-2 hover:bg-gray-100 rounded" href="{{ route('profile',auth()->user()) }}">👤 Profile</a>
-   <a class="block font-semibold p-2 hover:bg-gray-100 rounded" href="{{ route('friends.index') }}">👥 Friends</a>
-   <a class="block font-semibold p-2 hover:bg-gray-100 rounded">👨‍👩‍👧 Groups</a>
-   <a class="block font-semibold p-2 hover:bg-gray-100 rounded">🔔 Notifications</a>
-  </div>
- </aside>
-
- <section class="space-y-4">
-  <div class="card p-4">
-   <div class="flex gap-3">
-    <div class="w-11 h-11 rounded-full bg-blue-100 flex items-center justify-center font-bold text-blue-600">{{ strtoupper(substr(auth()->user()->name,0,1)) }}</div>
-    <button onclick="document.getElementById('post-modal').classList.remove('hidden')" class="flex-1 text-left bg-gray-100 rounded-full px-5 text-gray-500">What's on your mind?</button>
-   </div>
-  </div>
-
-  @foreach($posts as $post)
-  <article class="card overflow-hidden">
-   <div class="p-4 flex items-center gap-3">
-    <div class="w-11 h-11 rounded-full bg-gray-200 flex items-center justify-center font-bold">{{ strtoupper(substr($post->user->name,0,1)) }}</div>
-    <div><a class="font-bold hover:underline" href="{{ route('profile',$post->user) }}">{{ $post->user->name }}</a>
-     <div class="text-xs text-gray-500">{{ $post->created_at->diffForHumans() }} · {{ ucfirst($post->privacy) }}</div>
-    </div>
-   </div>
-   @if($post->body)<div class="px-4 pb-4 whitespace-pre-line text-[15px]">{{ $post->body }}</div>@endif
-   @if($post->image)<img src="{{ asset('storage/'.$post->image) }}" class="w-full max-h-[650px] object-cover">@endif
-   <div class="px-4 py-3 text-sm text-gray-500 border-b">{{ $post->likes_count }} likes · {{ $post->comments->count() }} comments</div>
-   <div class="grid grid-cols-3 border-b">
-    <form method="POST" action="{{ route('posts.like',$post) }}">@csrf<button class="w-full py-3 font-semibold hover:bg-gray-100">{{ $post->isLikedBy(auth()->user()) ? '👍 Liked' : '👍 Like' }}</button></form>
-    <button onclick="document.getElementById('comment-{{ $post->id }}').focus()" class="font-semibold hover:bg-gray-100">💬 Comment</button>
-    <button class="font-semibold hover:bg-gray-100">↗ Share</button>
-   </div>
-   <div class="p-4 space-y-3">
-    @foreach($post->comments->take(5) as $comment)
-     <div class="flex gap-2"><div class="w-8 h-8 shrink-0 rounded-full bg-gray-200 flex items-center justify-center text-xs font-bold">{{ strtoupper(substr($comment->user->name,0,1)) }}</div><div class="bg-gray-100 rounded-2xl px-3 py-2"><div class="font-semibold text-sm">{{ $comment->user->name }}</div><div>{{ $comment->body }}</div></div></div>
-    @endforeach
-    <form method="POST" action="{{ route('comments.store',$post) }}" class="flex gap-2">@csrf<input id="comment-{{ $post->id }}" name="body" required placeholder="Write a comment..." class="flex-1 bg-gray-100 rounded-full px-4 py-2 outline-none"><button class="btn btn-primary">Send</button></form>
-   </div>
-  </article>
-  @endforeach
-  {{ $posts->links() }}
- </section>
-
- <aside class="hidden lg:block"><div class="card p-4 sticky top-24"><h3 class="font-bold mb-3">Sponsored</h3><p class="text-sm text-gray-500">Your advertisement can appear here.</p></div></aside>
-</div>
-
-<div id="post-modal" class="hidden fixed inset-0 z-[60] bg-black/50 p-4">
- <div class="max-w-lg mx-auto mt-20 bg-white rounded-2xl p-5">
-  <div class="flex justify-between items-center mb-4"><h2 class="text-xl font-bold">Create post</h2><button onclick="document.getElementById('post-modal').classList.add('hidden')" class="text-2xl">×</button></div>
-  <form method="POST" action="{{ route('posts.store') }}" enctype="multipart/form-data">@csrf
-   <textarea name="body" rows="5" placeholder="What's on your mind?" class="w-full border rounded-xl p-3"></textarea>
-   <div class="mt-4 flex gap-3 items-center"><input type="file" name="image" accept="image/*" class="text-sm"><select name="privacy" class="border rounded-lg px-3 py-2"><option value="public">Public</option><option value="friends">Friends</option><option value="only_me">Only me</option></select></div>
-   <button class="btn btn-primary w-full mt-4">Post</button>
-  </form>
- </div>
-</div>
+<div class="grid grid-cols-1 lg:grid-cols-[230px_minmax(0,680px)_260px] gap-6 justify-center">
+<aside class="hidden lg:block"><div class="card p-4 sticky top-24 space-y-1"><div class="flex items-center gap-3 p-3 mb-2"><div class="avatar">{{ strtoupper(substr(auth()->user()->name,0,1)) }}</div><div><div class="font-bold text-sm">{{ auth()->user()->name }}</div><div class="text-xs text-slate-500">Your profile</div></div></div><a class="side-link" href="{{ route('profile',auth()->user()) }}">👤 Profile</a><a class="side-link" href="{{ route('friends.index') }}">👥 Friends</a><a class="side-link" href="{{ route('saved.index') }}">🔖 Saved posts</a><a class="side-link" href="{{ route('notifications.index') }}">🔔 Notifications</a></div></aside>
+<section class="space-y-5">
+<div class="rounded-3xl p-6 text-white bg-gradient-to-br from-blue-600 via-indigo-600 to-violet-700 shadow-lg"><div class="text-sm opacity-80">WELCOME BACK</div><h1 class="text-2xl font-black mt-1">Connect. Share. Discover.</h1><p class="mt-2 text-sm text-white/80">Share your thoughts and stay connected with your community.</p></div>
+<div class="card p-4"><div class="flex gap-3"><div class="avatar">{{ strtoupper(substr(auth()->user()->name,0,1)) }}</div><button onclick="document.getElementById('post-modal').classList.remove('hidden')" class="flex-1 text-left bg-slate-100 hover:bg-slate-200 rounded-2xl px-5 py-3 text-slate-500 transition">What's on your mind, {{ Str::before(auth()->user()->name,' ') }}?</button></div><div class="grid grid-cols-3 mt-4 border-t pt-3 text-sm font-semibold"><button onclick="document.getElementById('post-modal').classList.remove('hidden')">📝 Post</button><button onclick="document.getElementById('post-modal').classList.remove('hidden')">📷 Photo</button><a class="text-center" href="{{ route('friends.index') }}">👥 Find people</a></div></div>
+@forelse($posts as $post)<article class="card overflow-hidden">
+<div class="p-4 flex items-center gap-3"><a href="{{ route('profile',$post->user) }}" class="avatar">{{ strtoupper(substr($post->user->name,0,1)) }}</a><div class="flex-1"><a class="font-bold hover:text-blue-600" href="{{ route('profile',$post->user) }}">{{ $post->user->name }}</a><div class="text-xs text-slate-500">{{ $post->created_at->diffForHumans() }} · {{ ucfirst(str_replace('_',' ',$post->privacy)) }}</div></div>@if($post->user_id===auth()->id())<form method="POST" action="{{ route('posts.destroy',$post) }}">@csrf @method('DELETE')<button class="text-slate-400 hover:text-red-500">•••</button></form>@endif</div>
+@if($post->body)<div class="px-4 pb-4 whitespace-pre-line leading-7">{{ $post->body }}</div>@endif @if($post->image)<img src="{{ asset('storage/'.$post->image) }}" class="w-full max-h-[650px] object-cover">@endif
+<div class="px-4 py-3 text-sm text-slate-500 flex justify-between border-b"><span>👍 {{ $post->likes_count }} likes</span><span>{{ $post->comments->count() }} comments</span></div>
+<div class="grid grid-cols-3 border-b"><form method="POST" action="{{ route('posts.like',$post) }}">@csrf<button class="w-full py-3 font-semibold hover:bg-slate-50">{{ $post->isLikedBy(auth()->user())?'👍 Liked':'👍 Like' }}</button></form><button onclick="document.getElementById('comment-{{ $post->id }}').focus()" class="font-semibold hover:bg-slate-50">💬 Comment</button><form method="POST" action="{{ route('posts.save',$post) }}">@csrf<button class="w-full py-3 font-semibold hover:bg-slate-50">{{ $post->isSavedBy(auth()->user())?'🔖 Saved':'🔖 Save' }}</button></form></div>
+<div class="p-4 space-y-3">@foreach($post->comments->take(4) as $comment)<div class="flex gap-2"><div class="w-8 h-8 shrink-0 rounded-full bg-slate-100 flex items-center justify-center text-xs font-bold">{{ strtoupper(substr($comment->user->name,0,1)) }}</div><div class="bg-slate-100 rounded-2xl px-3 py-2 text-sm"><div class="font-semibold">{{ $comment->user->name }}</div><div>{{ $comment->body }}</div></div></div>@endforeach<form method="POST" action="{{ route('comments.store',$post) }}" class="flex gap-2">@csrf<input id="comment-{{ $post->id }}" name="body" required placeholder="Write a comment..." class="flex-1 bg-slate-100 rounded-full px-4 py-2 outline-none"><button class="btn btn-primary">Send</button></form></div></article>@empty<div class="card p-10 text-center"><div class="text-5xl mb-3">🌱</div><h2 class="text-xl font-bold">Your feed is waiting</h2><p class="text-slate-500 mt-2">Create your first post or connect with people.</p></div>@endforelse
+{{ $posts->links() }}</section>
+<aside class="hidden lg:block"><div class="card p-5 sticky top-24"><div class="flex justify-between items-center mb-4"><h3 class="font-bold">People you may know</h3><a href="{{ route('search') }}" class="text-xs text-blue-600">See all</a></div>@foreach($suggestions as $person)<div class="flex items-center gap-3 py-3 border-b last:border-0"><a class="avatar-sm" href="{{ route('profile',$person) }}">{{ strtoupper(substr($person->name,0,1)) }}</a><div class="flex-1 min-w-0"><a class="font-semibold text-sm truncate block" href="{{ route('profile',$person) }}">{{ $person->name }}</a><div class="text-xs text-slate-500">New to Socially</div></div><form method="POST" action="{{ route('friends.store',$person) }}">@csrf<button class="text-xs font-bold text-blue-600">Add</button></form></div>@endforeach</div></aside></div>
+<div id="post-modal" class="hidden fixed inset-0 z-[60] bg-slate-950/60 p-4"><div class="max-w-lg mx-auto mt-16 bg-white rounded-3xl p-6 shadow-2xl"><div class="flex justify-between items-center mb-5"><h2 class="text-xl font-black">Create post</h2><button onclick="document.getElementById('post-modal').classList.add('hidden')" class="text-2xl text-slate-400">×</button></div><form method="POST" action="{{ route('posts.store') }}" enctype="multipart/form-data">@csrf<textarea name="body" rows="5" placeholder="What's on your mind?" class="w-full border-slate-200 rounded-2xl p-4"></textarea><div class="mt-4 grid sm:grid-cols-2 gap-3"><input type="file" name="image" accept="image/*" class="text-sm"><select name="privacy" class="border-slate-200 rounded-xl px-3 py-2"><option value="public">🌎 Public</option><option value="friends">👥 Friends</option><option value="only_me">🔒 Only me</option></select></div><button class="btn btn-primary w-full mt-5">Publish post</button></form></div></div>
 @endsection

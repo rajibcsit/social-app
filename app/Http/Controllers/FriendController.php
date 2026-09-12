@@ -1,38 +1,10 @@
 <?php
 namespace App\Http\Controllers;
-
-use App\Models\Friendship;
-use App\Models\User;
-use Illuminate\Http\Request;
-
-class FriendController extends Controller
-{
-    public function index()
-    {
-        $id=auth()->id();
-        $friends=User::whereIn('id', Friendship::where(function($q)use($id){
-            $q->where('sender_id',$id)->orWhere('receiver_id',$id);
-        })->where('status','accepted')->get()->map(fn($f)=>$f->sender_id==$id?$f->receiver_id:$f->sender_id))->get();
-        return view('friends.index',compact('friends'));
-    }
-
-    public function store(Request $request, User $user)
-    {
-        abort_if($user->id === $request->user()->id,422);
-        Friendship::firstOrCreate(
-            ['sender_id'=>$request->user()->id,'receiver_id'=>$user->id],
-            ['status'=>'pending']
-        );
-        return back();
-    }
-
-    public function destroy(Request $request, User $user)
-    {
-        Friendship::where(function($q)use($request,$user){
-            $q->where('sender_id',$request->user()->id)->where('receiver_id',$user->id);
-        })->orWhere(function($q)use($request,$user){
-            $q->where('sender_id',$user->id)->where('receiver_id',$request->user()->id);
-        })->delete();
-        return back();
-    }
+use App\Models\Friendship; use App\Models\User; use App\Notifications\SocialNotification; use Illuminate\Http\Request;
+class FriendController extends Controller {
+ public function index(){ $id=auth()->id(); $relations=Friendship::where(fn($q)=>$q->where('sender_id',$id)->orWhere('receiver_id',$id)); $friends=User::whereIn('id',$relations->where('status','accepted')->get()->map(fn($f)=>$f->sender_id==$id?$f->receiver_id:$f->sender_id))->get(); $incoming=Friendship::with('sender')->where('receiver_id',$id)->where('status','pending')->latest()->get(); $outgoing=Friendship::with('receiver')->where('sender_id',$id)->where('status','pending')->latest()->get(); return view('friends.index',compact('friends','incoming','outgoing')); }
+ public function store(Request $r,User $user){abort_if($user->id===$r->user()->id,422);$existing=Friendship::where(fn($q)=>$q->where('sender_id',$r->user()->id)->where('receiver_id',$user->id))->orWhere(fn($q)=>$q->where('sender_id',$user->id)->where('receiver_id',$r->user()->id))->first();if(!$existing){Friendship::create(['sender_id'=>$r->user()->id,'receiver_id'=>$user->id,'status'=>'pending']);$user->notify(new SocialNotification($r->user()->name.' sent you a friend request.',route('friends.index')));}return back()->with('success','Friend request sent.');}
+ public function accept(Request $r,Friendship $friendship){abort_unless($friendship->receiver_id===$r->user()->id,403);$friendship->update(['status'=>'accepted']);$friendship->sender->notify(new SocialNotification($r->user()->name.' accepted your friend request.',route('profile',$r->user())));return back()->with('success','Friend request accepted.');}
+ public function reject(Request $r,Friendship $friendship){abort_unless($friendship->receiver_id===$r->user()->id,403);$friendship->update(['status'=>'rejected']);return back();}
+ public function destroy(Request $r,User $user){Friendship::where(fn($q)=>$q->where('sender_id',$r->user()->id)->where('receiver_id',$user->id))->orWhere(fn($q)=>$q->where('sender_id',$user->id)->where('receiver_id',$r->user()->id))->delete();return back()->with('success','Friendship removed.');}
 }
