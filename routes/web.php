@@ -14,3 +14,12 @@ Route::middleware(['auth'])->group(function(){
  Route::get('/notifications',[NotificationController::class,'index'])->name('notifications.index'); Route::post('/notifications/{notification}/read',[NotificationController::class,'read'])->name('notifications.read'); Route::post('/notifications/read-all',[NotificationController::class,'readAll'])->name('notifications.read-all');
 });
 require __DIR__.'/auth.php';
+
+Route::middleware(['auth','admin'])->prefix('admin')->name('admin.')->group(function(){
+ Route::get('/', [\App\Http\Controllers\Admin\AdminController::class,'dashboard'])->name('dashboard');
+ Route::get('/users', [\App\Http\Controllers\Admin\AdminController::class,'users'])->name('users');
+ Route::post('/users/{user}/toggle', [\App\Http\Controllers\Admin\AdminController::class,'toggleUser'])->name('users.toggle');
+ Route::delete('/users/{user}', [\App\Http\Controllers\Admin\AdminController::class,'deleteUser'])->name('users.delete');
+ Route::get('/posts', [\App\Http\Controllers\Admin\AdminController::class,'posts'])->name('posts');
+ Route::delete('/posts/{post}', [\App\Http\Controllers\Admin\AdminController::class,'deletePost'])->name('posts.delete');
+});
