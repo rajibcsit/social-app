@@ -1,27 +1,29 @@
-# Social App — Advanced UI & Modules Update
+# Connectly Social App — Latest Upgrade
 
-This update builds on the existing Laravel 12 social application.
+This package is an update of the existing Laravel social application.
 
-## Included
-- Modern responsive Socially home/feed UI
-- Feed privacy filtering (Public / Friends / Only me)
-- Friend requests with Accept / Decline
-- People-you-may-know suggestions
-- Database notifications for friend requests, likes and comments
-- Notifications page + mark read / mark all read
-- Saved Posts / bookmarks
-- Enhanced profile fields: bio, avatar, cover, location, website, phone
-- Profile edit page with image uploads
-- Online-status helper (`User::isOnline()`)
-- Improved navigation and mobile-friendly styling
-- Post delete, like, comment and save actions
+## Added in this version
 
-## Installation
+- Friend request badge/count on the Friends navigation item.
+- Friend request count also appears in the feed sidebar.
+- Post 3-dot action menu for post owners.
+- Edit Post modal with body, privacy and optional replacement photo.
+- Delete Post confirmation alert.
+- Automatic deletion of the old post image when a replacement image is uploaded.
+- Profile now shows total friends, posts and photos.
+- Profile Friends section with the complete friend list.
+- Profile Photos section with all posts containing photos.
+- Photo preview before creating a post.
+- Photo preview before editing a post.
+- Avatar and Cover photo previews in Edit Profile.
+- Existing Connectly admin/social modules remain included.
+
+## Install / update
+
+After extracting this project, run:
 
 ```bash
 composer install
-cp .env.example .env
-php artisan key:generate
 php artisan migrate
 php artisan storage:link
 npm install
@@ -35,4 +37,6 @@ php artisan serve
 npm run dev
 ```
 
-The project intentionally does not include `vendor/` or `node_modules/`.
+## Important
+
+If this is being applied over an existing Connectly installation, back up your database and `storage/app/public` before replacing files.
